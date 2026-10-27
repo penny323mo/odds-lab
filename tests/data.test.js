@@ -4,6 +4,29 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
+
+function rawFixturesInWindow(div) {
+  const file = path.join(__dirname, '..', 'raw', 'fixtures.csv');
+  if (!fs.existsSync(file)) return null;
+  const lines = fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '').split(/\r?\n/).filter(Boolean);
+  const header = lines[0].split(',');
+  const iDiv = header.indexOf('Div'), iDate = header.indexOf('Date');
+  if (iDiv < 0 || iDate < 0) return null;
+  const today = new Date(); today.setUTCHours(0, 0, 0, 0);
+  const min = new Date(today.getTime() - 1 * 86400000), max = new Date(today.getTime() + 5 * 86400000);
+  let n = 0;
+  for (const line of lines.slice(1)) {
+    const c = line.split(',');
+    if ((c[iDiv] || '').trim() !== div) continue;
+    const m = (c[iDate] || '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+    if (!m) return null; // unparseable date: be strict
+    let y = +m[3]; if (y < 100) y += 2000;
+    const d = new Date(Date.UTC(y, +m[2] - 1, +m[1]));
+    if (d >= min && d <= max) n++;
+  }
+  return n;
+}
+
 test('data/data.js loads via VM and has expected top-level schema and 5 leagues', () => {
   const filePath = path.join(__dirname, '..', 'data', 'data.js');
   const code = fs.readFileSync(filePath, 'utf8');
@@ -54,6 +77,15 @@ test('2627 teams count is 20 for E0/SP1/I1 and 18 for D1/F1, and matches have va
     }
 
     // Verify fixtures
-    assert.ok(lg.fixtures.length > 0, `League ${div} should have upcoming fixtures`);
+    // Only require fixtures when the source (raw/fixtures.csv) actually lists
+    // matches for this league inside the build window (today-1 .. today+5 UTC).
+    // football-data.co.uk only refreshes fixtures.csv a few days before each
+    // matchweek, so early in the week it can legitimately contain none.
+    const rawInWindow = rawFixturesInWindow(div);
+    if (rawInWindow === null || rawInWindow > 0) {
+      assert.ok(lg.fixtures.length > 0, `League ${div} should have upcoming fixtures (source has ${rawInWindow ?? 'unknown'} in window)`);
+    } else if (lg.fixtures.length === 0) {
+      console.warn(`[warn] League ${div}: source fixtures.csv has no matches in the build window; 0 fixtures is expected`);
+    }
   }
 });
