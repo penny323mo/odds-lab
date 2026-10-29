@@ -134,6 +134,15 @@ class TestOddsLabV4(unittest.TestCase):
         self.assertTrue(teams_match("Athletic Bilbao", "Ath Bilbao"))
         self.assertTrue(teams_match("Atalanta BC", "Atalanta"))
 
+        # Macau Slot often uses full German club forms with year suffixes.
+        # Regression 2026-10-29: "SC Paderborn 07" fell through to ASCII and
+        # failed v4.test.js CJK assertion on scheduled Update Data runs.
+        self.assertEqual(normalize_team_name("SC Paderborn 07"), "paderborn")
+        self.assertEqual(get_team_cantonese("SC Paderborn 07"), "柏達邦")
+        self.assertEqual(get_team_cantonese("SC Paderborn"), "柏達邦")
+        self.assertTrue(teams_match("SC Paderborn 07", "Paderborn"))
+        self.assertTrue(bool(__import__("re").search(r"[\u4e00-\u9fff]", get_team_cantonese("SC Paderborn 07"))))
+
     def test_schema_and_health_file(self):
         health_path = os.path.join(os.path.dirname(__file__), "..", "data", "health.json")
         self.assertTrue(os.path.exists(health_path), "data/health.json must exist")

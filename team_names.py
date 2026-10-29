@@ -214,6 +214,8 @@ TEAM_NAMES = {
     "Borussia Monchengladbach": "慕遜加柏",
     "Borussia Mönchengladbach": "慕遜加柏",
     "Paderborn": "柏達邦",
+    "SC Paderborn": "柏達邦",
+    "SC Paderborn 07": "柏達邦",
     "RB Leipzig": "RB萊比錫",
     "Leipzig": "RB萊比錫",
     "St Pauli": "聖保利",
@@ -432,7 +434,7 @@ def normalize_team_name(name: str) -> str:
     # Remove standard non-identifying noise words only
     noise_tokens = {
         "fc", "cf", "afc", "sc", "ac", "as", "cd", "ud", "rcd", "rc", "tsg", "fsv",
-        "vfb", "vfl", "sv", "fk", "sk", "bsc", "hsc", "1", "04", "05", "1899", "1907",
+        "vfb", "vfl", "sv", "fk", "sk", "bsc", "hsc", "1", "04", "05", "07", "1899", "1907",
         "club", "calcio", "de", "del", "la", "le", "and"
     }
     tokens = [t for t in s.split() if t and t not in noise_tokens]
