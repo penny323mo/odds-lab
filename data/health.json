@@ -1,11 +1,11 @@
 {
   "status": "healthy",
-  "checked_at": "2026-10-29T03:31:16Z",
+  "checked_at": "2026-10-29T11:58:19Z",
   "issues": [],
   "sources": {
     "macau_slot": {
       "status": "healthy",
-      "last_fetch": "2026-10-29T03:31:16Z",
+      "last_fetch": "2026-10-29T11:58:19Z",
       "events_count": 25,
       "message": "Fetched 25 events"
     },
@@ -19,7 +19,7 @@
     },
     "football_data": {
       "status": "healthy",
-      "finished_matches_count": 2146,
+      "finished_matches_count": 2154,
       "sharp_ah_count": 46
     }
   }
