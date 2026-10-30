@@ -85,16 +85,17 @@ jobs:
             # Ensure label exists (ignore error if already present)
             gh label create "missing-team-names" --description "Unmapped Cantonese football team names" --color "F9D0C4" 2>/dev/null || true
             EXISTING_MISS=$(gh issue list --label missing-team-names --state open --json number -q '.[0].number' || true)
-            MISS_BODY="### ⚠️ Odds Lab missing Cantonese team names
-Timestamp: $(date -u)
-Count: ${MISSING_COUNT}
-
-Teams without a Cantonese mapping (site shows English fallback). Please add them to \`team_names.py\`.
-
-\`\`\`json
-$(cat data/missing_team_names.json)
-\`\`\`
-"
+            # Keep every line indented so the YAML | block stays valid
+            MISS_BODY=$(printf '%s\n' \
+              "### ⚠️ Odds Lab missing Cantonese team names" \
+              "Timestamp: $(date -u)" \
+              "Count: ${MISSING_COUNT}" \
+              "" \
+              "Teams without a Cantonese mapping (site shows English fallback). Please add them to \`team_names.py\`." \
+              "" \
+              '```json' \
+              "$(cat data/missing_team_names.json)" \
+              '```')
             if [ -n "$EXISTING_MISS" ]; then
               echo "Updating existing issue #${EXISTING_MISS}..."
               gh issue comment "$EXISTING_MISS" --body "$MISS_BODY" || echo "Warning: Could not comment on missing-team-names issue"
