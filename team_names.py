@@ -268,6 +268,8 @@ TEAM_NAMES = {
     "Paris Saint-Germain": "巴黎聖日耳門",
     "Paris St Germain": "巴黎聖日耳門",
     "PSG": "巴黎聖日耳門",
+    "Paris FC": "巴黎FC",
+    "Paris Football Club": "巴黎FC",
     "Reims": "蘭斯",
     "Stade de Reims": "蘭斯",
     "Rennes": "雷恩",
