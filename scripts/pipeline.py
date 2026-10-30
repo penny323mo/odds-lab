@@ -36,7 +36,7 @@ for p in (CURRENT_DIR, PARENT_DIR):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from team_names import TEAM_NAMES, get_team_cantonese, teams_match, normalize_team_name
+from team_names import TEAM_NAMES, get_team_cantonese, list_missing_cantonese, teams_match, normalize_team_name
 from fetch_macau import fetch_macau_data, COMPETITION_MAP
 from fetch_odds_api import fetch_odds_api
 from math_engine import (
@@ -472,6 +472,7 @@ def run_pipeline(force_odds_api=False):
     macau_events = macau_result.get("events", [])
     processed_fixtures = []
     unmatched_events = []
+    missing_team_names = []  # English names with no Cantonese mapping
     all_value_bets = []
 
     # Load snapshot history for sparklines
@@ -485,13 +486,13 @@ def run_pipeline(force_odds_api=False):
         lg_code = mev["league_code"]
         ev_id = mev["ev_id"]
 
-        # Ensure Cantonese team names are 100% valid CJK (P1-4)
+        # Ensure Cantonese team names prefer CJK; fall back to English and collect misses (P1-4)
         h_zh = mev.get("home_zh") or ""
         a_zh = mev.get("away_zh") or ""
         if not re.search(r"[\u4e00-\u9fff]", h_zh) or "?" in h_zh:
-            h_zh = get_team_cantonese(h_m)
+            h_zh = get_team_cantonese(h_m, collect_missing=missing_team_names)
         if not re.search(r"[\u4e00-\u9fff]", a_zh) or "?" in a_zh:
-            a_zh = get_team_cantonese(a_m)
+            a_zh = get_team_cantonese(a_m, collect_missing=missing_team_names)
         mev["home_zh"] = h_zh
         mev["away_zh"] = a_zh
 
@@ -1145,6 +1146,40 @@ def run_pipeline(force_odds_api=False):
     unmatched_file = os.path.join(DATA_DIR, "unmatched.json")
     with open(unmatched_file, "w", encoding="utf-8") as f:
         json.dump(unmatched_events, f, ensure_ascii=False, indent=2)
+
+    # Missing Cantonese team names (promoted / new clubs): warn, do not fail the build
+    # Also recompute from fixture English names so Macau-provided CJK does not hide gaps in TEAM_NAMES.
+    fixture_team_names = []
+    for fx in processed_fixtures:
+        fixture_team_names.append(fx.get("home") or "")
+        fixture_team_names.append(fx.get("away") or "")
+    missing_sorted = list_missing_cantonese(fixture_team_names)
+    # Merge any names collected during zh resolution (e.g. early path)
+    for n in missing_team_names:
+        if n and n not in missing_sorted:
+            missing_sorted.append(n)
+    missing_sorted = sorted(set(missing_sorted))
+    missing_payload = {
+        "generated_at": now_iso_utc,
+        "teams": missing_sorted,
+    }
+    missing_file = os.path.join(DATA_DIR, "missing_team_names.json")
+    with open(missing_file, "w", encoding="utf-8") as f:
+        json.dump(missing_payload, f, ensure_ascii=False, indent=2)
+
+    strict_team_names = os.environ.get("ODDS_LAB_STRICT_TEAM_NAMES", "").strip() == "1"
+    if missing_sorted:
+        miss_msg = f"Missing Cantonese team names ({len(missing_sorted)}): " + ", ".join(missing_sorted)
+        print(f"[Pipeline] WARNING: {miss_msg}")
+        for t in missing_sorted:
+            print(f"::warning title=Missing Cantonese team name::{t}")
+        print(f"::warning title=Missing Cantonese team names::{miss_msg}")
+        health_status["issues"].append(miss_msg)
+        if strict_team_names:
+            health_status["status"] = "error"
+            print("[Pipeline] ODDS_LAB_STRICT_TEAM_NAMES=1 → treating missing names as error")
+        elif health_status["status"] == "healthy":
+            health_status["status"] = "warning"
 
     # Step 7: Write health status
     health_file = os.path.join(DATA_DIR, "health.json")

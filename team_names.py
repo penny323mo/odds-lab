@@ -442,8 +442,20 @@ def normalize_team_name(name: str) -> str:
     tokens = [t for t in s.split() if t and t not in noise_tokens]
     return " ".join(tokens) if tokens else s.strip()
 
-def get_team_cantonese(name: str) -> str:
-    """Return Cantonese translation for a team name, falling back to original name if missing."""
+def _append_missing(collect_missing, name: str) -> None:
+    """Append name to collect_missing once (preserves first-seen order)."""
+    if collect_missing is None or not name:
+        return
+    if name not in collect_missing:
+        collect_missing.append(name)
+
+
+def get_team_cantonese(name: str, collect_missing=None) -> str:
+    """Return Cantonese translation for a team name, falling back to the English name if missing.
+
+    If collect_missing is a list and no mapping is found, the original English name is
+    appended once so callers can record unmapped promotees / new clubs.
+    """
     if not name:
         return ""
     if name in TEAM_NAMES:
@@ -457,7 +469,22 @@ def get_team_cantonese(name: str) -> str:
     for k, v in TEAM_NAMES.items():
         if normalize_team_name(k) == norm:
             return v
+    _append_missing(collect_missing, name)
     return name
+
+
+def list_missing_cantonese(names) -> list:
+    """Return sorted unique English team names that have no Cantonese mapping."""
+    missing = []
+    seen = set()
+    for name in names or []:
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        zh = get_team_cantonese(name)
+        if not re.search(r"[\u4e00-\u9fff]", zh):
+            missing.append(name)
+    return sorted(missing)
 
 def teams_match(name1: str, name2: str) -> bool:
     """

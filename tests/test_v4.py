@@ -29,7 +29,7 @@ from math_engine import (
 from pipeline import validate_macau_response
 from record_tracker import update_track_record
 from team_names import (
-    TEAM_NAMES, get_team_cantonese, normalize_team_name,
+    TEAM_NAMES, get_team_cantonese, list_missing_cantonese, normalize_team_name,
     teams_match, strip_accents
 )
 
@@ -143,7 +143,42 @@ class TestOddsLabV4(unittest.TestCase):
         self.assertTrue(teams_match("SC Paderborn 07", "Paderborn"))
         self.assertTrue(bool(__import__("re").search(r"[\u4e00-\u9fff]", get_team_cantonese("SC Paderborn 07"))))
 
+    def test_paris_fc_cantonese_mapped(self):
+        """Paris FC (Ligue 1 promotee) must resolve to 巴黎FC with CJK."""
+        self.assertEqual(get_team_cantonese("Paris FC"), "巴黎FC")
+        self.assertEqual(get_team_cantonese("Paris Football Club"), "巴黎FC")
+        self.assertTrue(bool(__import__("re").search(r"[\u4e00-\u9fff]", get_team_cantonese("Paris FC"))))
+        self.assertNotIn("Paris FC", list_missing_cantonese(["Paris FC", "Paris Football Club", "Arsenal"]))
+
+    def test_get_team_cantonese_fallback_and_collect_missing(self):
+        """Unmapped teams fall back to English and can be collected for warnings."""
+        unknown = "Totally Fake United FC 2099"
+        self.assertEqual(get_team_cantonese(unknown), unknown)
+        bucket = []
+        self.assertEqual(get_team_cantonese(unknown, collect_missing=bucket), unknown)
+        self.assertEqual(bucket, [unknown])
+        # Mapped names must not be collected
+        get_team_cantonese("Arsenal", collect_missing=bucket)
+        get_team_cantonese("Paris FC", collect_missing=bucket)
+        self.assertEqual(bucket, [unknown])
+        # Second collect of same unknown does not duplicate
+        get_team_cantonese(unknown, collect_missing=bucket)
+        self.assertEqual(bucket, [unknown])
+
+    def test_list_missing_cantonese_helper(self):
+        missing = list_missing_cantonese([
+            "Arsenal",
+            "Totally Fake United FC 2099",
+            "Paris FC",
+            "Another Fake Club",
+            "Totally Fake United FC 2099",  # dedupe
+            "",
+            None,
+        ])
+        self.assertEqual(missing, ["Another Fake Club", "Totally Fake United FC 2099"])
+
     def test_schema_and_health_file(self):
+
         health_path = os.path.join(os.path.dirname(__file__), "..", "data", "health.json")
         self.assertTrue(os.path.exists(health_path), "data/health.json must exist")
         with open(health_path, "r", encoding="utf-8") as f:

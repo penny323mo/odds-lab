@@ -74,15 +74,47 @@ jobs:
             echo "Data pipeline health status: ${STATUS} (healthy)"
           fi
 
+          # Missing Cantonese team names → open/update issue (does not fail the build)
+          if [ -f data/missing_team_names.json ]; then
+            MISSING_COUNT=$(python3 -c "import json; print(len(json.load(open('data/missing_team_names.json')).get('teams') or []))")
+          else
+            MISSING_COUNT=0
+          fi
+          if [ "$MISSING_COUNT" != "0" ]; then
+            echo "Found ${MISSING_COUNT} missing Cantonese team name(s). Checking for existing missing-team-names issue..."
+            # Ensure label exists (ignore error if already present)
+            gh label create "missing-team-names" --description "Unmapped Cantonese football team names" --color "F9D0C4" 2>/dev/null || true
+            EXISTING_MISS=$(gh issue list --label missing-team-names --state open --json number -q '.[0].number' || true)
+            MISS_BODY="### ⚠️ Odds Lab missing Cantonese team names
+Timestamp: $(date -u)
+Count: ${MISSING_COUNT}
+
+Teams without a Cantonese mapping (site shows English fallback). Please add them to \`team_names.py\`.
+
+\`\`\`json
+$(cat data/missing_team_names.json)
+\`\`\`
+"
+            if [ -n "$EXISTING_MISS" ]; then
+              echo "Updating existing issue #${EXISTING_MISS}..."
+              gh issue comment "$EXISTING_MISS" --body "$MISS_BODY" || echo "Warning: Could not comment on missing-team-names issue"
+            else
+              echo "Opening new missing-team-names issue..."
+              gh issue create --title "Missing Cantonese team names (${MISSING_COUNT})" --label "missing-team-names" --body "$MISS_BODY" || echo "Warning: Could not create missing-team-names issue"
+            fi
+          else
+            echo "No missing Cantonese team names."
+          fi
+
       - name: Commit and push changes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if ! git diff --quiet data/data.js data/health.json data/track_record.json; then
+          if ! git diff --quiet data/data.js data/health.json data/track_record.json data/missing_team_names.json; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             UTC_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-            git add data/data.js data/health.json data/track_record.json data/odds_api_state.json data/odds_api_cache.json data/snapshots/ data/unmatched.json
+            git add data/data.js data/health.json data/track_record.json data/odds_api_state.json data/odds_api_cache.json data/snapshots/ data/unmatched.json data/missing_team_names.json
             git commit -m "data: auto update ${UTC_TIME}"
             git pull --rebase origin ${{ github.ref_name }} || git pull --rebase || true
             git push origin HEAD:${{ github.ref_name }}
