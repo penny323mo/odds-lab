@@ -5,5 +5,12 @@
     "league": "SP1",
     "home": "Deportivo A Coruna",
     "away": "Osasuna"
+  },
+  {
+    "ev_id": "2093202153641394178",
+    "kickoff": "2026-11-04 04:00:00",
+    "league": "UCL",
+    "home": "LASK Linz",
+    "away": "Slovan Bratislava"
   }
 ]
