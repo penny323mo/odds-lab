@@ -1,9 +1,9 @@
 {
-  "last_run_utc": "2026-10-31",
-  "last_run_timestamp": "2026-10-31T04:50:19Z",
-  "requests_remaining": 200,
-  "requests_used": 300,
+  "last_run_utc": "2026-11-01",
+  "last_run_timestamp": "2026-11-01T05:15:09Z",
+  "requests_remaining": 468,
+  "requests_used": 32,
   "status": "success",
-  "message": "Successfully fetched 136 matches across 8 leagues",
-  "cached_events_count": 136
+  "message": "Successfully fetched 114 matches across 8 leagues",
+  "cached_events_count": 114
 }
