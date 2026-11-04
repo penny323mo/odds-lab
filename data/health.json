@@ -1,15 +1,15 @@
 {
   "status": "warning",
-  "checked_at": "2026-11-04T05:34:58Z",
+  "checked_at": "2026-11-04T14:00:55Z",
   "issues": [
     "Missing Cantonese team names (6): Ferencvarosi TC, GNK Dinamo Zagreb, Jagiellonia Bialystok, Levski Sofia, Omonia Nicosia, Sparta Praha"
   ],
   "sources": {
     "macau_slot": {
       "status": "healthy",
-      "last_fetch": "2026-11-04T05:34:58Z",
-      "events_count": 32,
-      "message": "Fetched 32 events"
+      "last_fetch": "2026-11-04T14:00:55Z",
+      "events_count": 36,
+      "message": "Fetched 36 events"
     },
     "the_odds_api": {
       "status": "healthy",
