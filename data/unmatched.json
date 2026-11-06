@@ -1,40 +1,5 @@
 [
   {
-    "ev_id": "2093930579348209666",
-    "kickoff": "2026-11-06 01:45:00",
-    "league": "UEL",
-    "home": "AC Milan",
-    "away": "Ferencvarosi TC"
-  },
-  {
-    "ev_id": "2093930580614889473",
-    "kickoff": "2026-11-06 01:45:00",
-    "league": "UEL",
-    "home": "Levski Sofia",
-    "away": "Jagiellonia Bialystok"
-  },
-  {
-    "ev_id": "2093930581432778753",
-    "kickoff": "2026-11-06 01:45:00",
-    "league": "UEL",
-    "home": "NEC Nijmegen",
-    "away": "Omonia Nicosia"
-  },
-  {
-    "ev_id": "2093930582619766786",
-    "kickoff": "2026-11-06 01:45:00",
-    "league": "UEL",
-    "home": "Sparta Praha",
-    "away": "Bournemouth"
-  },
-  {
-    "ev_id": "2093930586142982145",
-    "kickoff": "2026-11-06 04:00:00",
-    "league": "UEL",
-    "home": "Sunderland",
-    "away": "GNK Dinamo Zagreb"
-  },
-  {
     "ev_id": "2072430200405032962",
     "kickoff": "2026-11-07 23:15:00",
     "league": "SP1",
