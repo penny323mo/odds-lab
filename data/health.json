@@ -1,19 +1,19 @@
 {
   "status": "healthy",
-  "checked_at": "2026-11-11T13:50:46Z",
+  "checked_at": "2026-11-12T00:17:56Z",
   "issues": [],
   "sources": {
     "macau_slot": {
       "status": "healthy",
-      "last_fetch": "2026-11-11T13:50:46Z",
+      "last_fetch": "2026-11-12T00:17:56Z",
       "events_count": 0,
       "message": "Fetched 0 events"
     },
     "the_odds_api": {
       "status": "healthy",
-      "last_fetch": "2026-11-11T02:31:17Z",
-      "requests_remaining": 100,
-      "requests_used": 400,
+      "last_fetch": "2026-11-12T00:18:03Z",
+      "requests_remaining": 52,
+      "requests_used": 448,
       "events_count": 133,
       "message": "Successfully fetched 133 matches across 8 leagues"
     },
