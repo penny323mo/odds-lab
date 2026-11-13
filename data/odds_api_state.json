@@ -1,9 +1,9 @@
 {
   "last_run_utc": "2026-11-12",
   "last_run_timestamp": "2026-11-12T00:18:03Z",
-  "requests_remaining": 52,
-  "requests_used": 448,
-  "status": "success",
-  "message": "Successfully fetched 133 matches across 8 leagues",
+  "requests_remaining": 36,
+  "requests_used": 464,
+  "status": "quota_low",
+  "message": "Remaining credits (36) below threshold (40)",
   "cached_events_count": 133
 }
