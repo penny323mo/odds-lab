@@ -1,11 +1,11 @@
 {
   "status": "healthy",
-  "checked_at": "2026-11-15T05:39:58Z",
+  "checked_at": "2026-11-15T13:42:17Z",
   "issues": [],
   "sources": {
     "macau_slot": {
       "status": "healthy",
-      "last_fetch": "2026-11-15T05:39:58Z",
+      "last_fetch": "2026-11-15T13:42:17Z",
       "events_count": 0,
       "message": "Fetched 0 events"
     },
