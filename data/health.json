@@ -1,15 +1,15 @@
 {
   "status": "warning",
-  "checked_at": "2026-11-19T15:29:27Z",
+  "checked_at": "2026-11-20T00:26:37Z",
   "issues": [
     "Missing Cantonese team names (1): Deportivo A Coruna"
   ],
   "sources": {
     "macau_slot": {
       "status": "healthy",
-      "last_fetch": "2026-11-19T15:29:27Z",
-      "events_count": 37,
-      "message": "Fetched 37 events"
+      "last_fetch": "2026-11-20T00:26:37Z",
+      "events_count": 45,
+      "message": "Fetched 45 events"
     },
     "the_odds_api": {
       "status": "warning",
