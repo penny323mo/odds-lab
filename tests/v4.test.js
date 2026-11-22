@@ -56,8 +56,12 @@ test('v4 Macau Fixtures: structure, classification badges, and genuine Cantonese
     assert.ok(fix.consensus, 'consensus object required');
 
     if (fix.bestOpportunity) {
-      assert.ok(['值博', '一般', '唔值博'].includes(fix.bestOpportunity.badge.label));
-      assert.ok(['value', 'neutral', 'avoid'].includes(fix.bestOpportunity.badge.tier));
+      // When no market is 值博, the card falls back to the 1X2 badge, which the
+      // pipeline marks 數據不足 / insufficient when EV is an outlier (> +15% or < -25%).
+      assert.ok(['值博', '一般', '唔值博', '數據不足'].includes(fix.bestOpportunity.badge.label),
+        `unexpected badge label '${fix.bestOpportunity.badge.label}' for ${fix.home} v ${fix.away}`);
+      assert.ok(['value', 'neutral', 'avoid', 'insufficient'].includes(fix.bestOpportunity.badge.tier),
+        `unexpected badge tier '${fix.bestOpportunity.badge.tier}' for ${fix.home} v ${fix.away}`);
     }
   }
 });
