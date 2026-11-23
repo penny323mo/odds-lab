@@ -1,13 +1,13 @@
 {
   "status": "warning",
-  "checked_at": "2026-11-22T23:25:53Z",
+  "checked_at": "2026-11-23T06:42:34Z",
   "issues": [
     "Missing Cantonese team names (1): LASK Linz"
   ],
   "sources": {
     "macau_slot": {
       "status": "healthy",
-      "last_fetch": "2026-11-22T23:25:53Z",
+      "last_fetch": "2026-11-23T06:42:34Z",
       "events_count": 21,
       "message": "Fetched 21 events"
     },
